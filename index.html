@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>e-TravelSphere — Prototype Demo</title>
+<style>
+  :root{--teal:#0aa89e;--bg:#f7f5f2;--card:#ffffff;--muted:#6b6b6b;}
+  body{font-family:Inter,Arial,Helvetica,sans-serif;margin:0;background:var(--bg);color:#14202b;}
+  .app{max-width:420px;margin:16px auto;border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.08);background:linear-gradient(180deg,#fff,#fbfbfb);}
+  header{padding:18px 20px;display:flex;align-items:center;gap:12px;background:var(--card);}
+  .logo{width:44px;height:44px;border-radius:10px;background:var(--teal);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;}
+  h1{font-size:16px;margin:0;}
+  .hero{padding:18px;background:linear-gradient(90deg,#fff,#f6fffb);}
+  .quest{background:#fff;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 6px 18px rgba(10,168,158,.06);}
+  .quest h2{margin:0;font-size:16px;}
+  .btn{display:inline-block;background:var(--teal);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600;text-align:center;}
+  .badges{display:flex;gap:10px;margin-top:12px;}
+  .badge{flex:1;background:var(--card);padding:10px;border-radius:10px;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,.03);}
+  .badge .icon{font-size:20px;margin-bottom:6px;}
+  nav{display:flex;justify-content:space-around;padding:10px;background:#fff;border-top:1px solid #eee;}
+  .navbtn{font-size:13px;color:var(--muted);text-align:center;}
+  main{padding:14px;display:grid;gap:12px;}
+  .card{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.03);}
+  .feed .post{display:flex;gap:12px;align-items:flex-start;padding:10px;border-radius:10px;border:1px solid #f0f0f0;}
+  .post img{width:64px;height:64px;border-radius:8px;object-fit:cover;}
+  .map{height:220px;border-radius:10px;overflow:hidden;position:relative;background:linear-gradient(180deg,#eafdf8,#dff7ef);display:flex;align-items:center;justify-content:center;color:#0b6; font-weight:700;}
+  .pin{position:absolute;background:var(--teal);color:#fff;padding:6px 8px;border-radius:8px;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.12);}
+  .pin.small{padding:6px;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;}
+  /* modal */
+  .modal-back{position:fixed;inset:0;background:rgba(10,10,10,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:60;}
+  .modal{background:#fff;border-radius:12px;padding:18px;max-width:420px;width:100%;box-shadow:0 30px 60px rgba(0,0,0,.25);}
+  .close{float:right;background:#eee;border-radius:8px;padding:6px;cursor:pointer;}
+  .itinerary{display:flex;flex-direction:column;gap:8px;}
+  .it{display:flex;justify-content:space-between;padding:8px;border-radius:8px;background:#fbfbfb;}
+  footer.small{font-size:12px;color:var(--muted);padding:12px;text-align:center;}
+</style>
+</head>
+<body>
+<div class="app" role="application" aria-label="e-TravelSphere prototype">
+  <header>
+    <div class="logo">eT</div>
+    <div>
+      <h1>e-TravelSphere</h1>
+      <div style="font-size:12px;color:var(--muted)">Gamified influencer tourism demo</div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="quest">
+      <h2>Influencer Travel Quest</h2>
+      <div style="color:var(--muted);font-size:13px">Explore hidden gems in Lipa with challenges from local creators.</div>
+      <a href="#" id="startQuest" class="btn" role="button">Start Quest</a>
+      <div class="badges">
+        <div class="badge"><div class="icon">🏛️</div><div style="font-weight:700">Culture Explorer</div></div>
+        <div class="badge"><div class="icon">🌿</div><div style="font-weight:700">Nature Lover</div></div>
+        <div class="badge"><div class="icon">🍜</div><div style="font-weight:700">Local Foodie</div></div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="card map" id="map">
+      <!-- pins -->
+      <div class="pin small" style="left:22%;top:36%" data-title="Hidden Falls">💧</div>
+      <div class="pin small" style="left:60%;top:28%" data-title="Heritage Cafe">☕</div>
+      <div class="pin small" style="left:44%;top:68%" data-title="Sunset Ridge">⛰️</div>
+      <div style="text-align:center;opacity:.9">Interactive map — click pins to see influencer posts & tips</div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong>Trending influencer posts</strong>
+        <a href="#" id="seeAll" style="font-size:13px;color:var(--teal);text-decoration:none">See all</a>
+      </div>
+      <div class="feed" style="margin-top:10px">
+        <div class="post" data-title="Hidden Falls video by @lia_travels">
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><rect fill='%23dff7ef' width='100%' height='100%'/><text x='50%' y='55%' font-size='14' text-anchor='middle' fill='%230a6b5f' font-family='Arial'>Hidden Falls</text></svg>" alt="Hidden Falls">
+          <div>
+            <div style="font-weight:700">Hidden Falls — @lia_travels</div>
+            <div style="font-size:13px;color:var(--muted)">Short video: waterfall trail + budget eats</div>
+            <div style="margin-top:8px"><a class="btn view" href="#" data-title="Hidden Falls video by @lia_travels">View</a></div>
+          </div>
+        </div>
+
+        <div class="post" data-title="Heritage Cafe guide by @chef_migz" style="margin-top:8px">
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><rect fill='%23fff1e6' width='100%' height='100%'/><text x='50%' y='55%' font-size='14' text-anchor='middle' fill='%23b55a2b' font-family='Arial'>Heritage Cafe</text></svg>" alt="Heritage Cafe">
+          <div>
+            <div style="font-weight:700">Heritage Cafe — @chef_migz</div>
+            <div style="font-size:13px;color:var(--muted)">Affordable local dishes & IG-worthy corner</div>
+            <div style="margin-top:8px"><a class="btn view" href="#" data-title="Heritage Cafe guide by @chef_migz">View</a></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <strong>Budget-Friendly Itinerary</strong>
+      <div class="itinerary" style="margin-top:8px">
+        <div class="it"><div>Hidden Falls + Picnic</div><div>₱350</div></div>
+        <div class="it"><div>Heritage Cafe lunch</div><div>₱220</div></div>
+        <div class="it"><div>Sunset Ridge + photos</div><div>₱0</div></div>
+      </div>
+      <div style="margin-top:8px"><a class="btn" id="savePlan" href="#">Save as My Plan</a></div>
+    </div>
+
+  </main>
+
+  <nav>
+    <div class="navbtn">🏠<div>Home</div></div>
+    <div class="navbtn">📍<div>Destinations</div></div>
+    <div class="navbtn">🗺️<div>Map</div></div>
+    <div class="navbtn">👤<div>Profile</div></div>
+  </nav>
+
+  <footer class="small">Prototype demo — interactions are simulated for your thesis presentation.</footer>
+</div>
+
+<!-- Modal -->
+<div class="modal-back" id="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div id="mtitle" style="font-weight:700"></div>
+      <div class="close" id="close">✕</div>
+    </div>
+    <div id="mbody" style="margin-top:12px;color:var(--muted)"></div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <a class="btn" id="getDirections" href="#" style="flex:1">Get directions</a>
+      <a class="btn" id="shareIt" href="#" style="flex:1;background:#1f9b7f">Share</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // basic interactivity for prototype (no external services)
+  function openModal(title, body) {
+    document.getElementById('mtitle').textContent = title;
+    document.getElementById('mbody').textContent = body || 'Details, influencer tips & budget hacks.';
+    document.getElementById('modal').style.display = 'flex';
+  }
+  function closeModal(){ document.getElementById('modal').style.display = 'none'; }
+  document.getElementById('close').addEventListener('click', closeModal);
+  document.getElementById('startQuest').addEventListener('click', function(e){ e.preventDefault(); openModal('Start Quest — #LipaHiddenGems','Complete 3 mini-missions by visiting marked spots and sharing with the hashtag to earn a Culture Explorer badge.'); });
+  document.querySelectorAll('.pin').forEach(function(p){ p.addEventListener('click', function(){ openModal(p.dataset.title, 'Influencer tip: visit early morning to avoid crowds. Local vendor discounts available when you show the app.'); }); });
+  document.querySelectorAll('.view').forEach(function(b){ b.addEventListener('click', function(e){ e.preventDefault(); openModal(this.dataset.title, 'Watch the influencer video on TikTok/Instagram. Estimated cost: ₱350. Recommended: bring water and tripod.'); }); });
+  document.getElementById('seeAll').addEventListener('click', function(e){ e.preventDefault(); openModal('All posts','Browse all influencer posts and filter by budget, distance, and vibe.'); });
+  document.getElementById('savePlan').addEventListener('click', function(e){ e.preventDefault(); openModal('Plan saved', 'Your budget-friendly plan was saved to your profile. Come back to track progress and redeem local discounts.'); });
+  document.getElementById('getDirections').addEventListener('click', function(e){ e.preventDefault(); closeModal(); alert('Directions simulated — in a real app this would open maps.'); });
+  document.getElementById('shareIt').addEventListener('click', function(e){ e.preventDefault(); closeModal(); alert('Share simulated — in a real app this opens share sheet.'); });
+  // simple keyboard close
+  window.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+</script>
+</body>
+</html>
